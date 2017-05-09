@@ -45,16 +45,24 @@ namespace GraphSh
         #region GraphAction
         public void ReNumerate(int[] newNumbers)
         {
-            VertexStatus[] newStatus = new VertexStatus[Dimension];
-            double[] newProbablilities = new double[Dimension];
-            for (int i = 0; i < newNumbers.Length; i++)
+            try
             {
-                newStatus[newNumbers[i]] = Status[i];
-                newProbablilities[newNumbers[i]] = Probabilities[i];
+                VertexStatus[] newStatus = new VertexStatus[Dimension];
+                double[] newProbablilities = new double[Dimension];
+                for (int i = 0; i < newNumbers.Length; i++)
+                {
+                    newStatus[newNumbers[i]] = Status[i];
+                    newProbablilities[newNumbers[i]] = Probabilities[i];
+                }
+                Status = new List<VertexStatus>(newStatus);
+                Probabilities = new List<double>(newProbablilities);
+                BaseGraph.ReNumerate(newNumbers);
             }
-            Status = new List<VertexStatus>(newStatus);
-            Probabilities = new List<double>(newProbablilities);
-            BaseGraph.ReNumerate(newNumbers);
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public int MergeVertex(List<List<int>> mergedList)
@@ -134,17 +142,19 @@ namespace GraphSh
             Status[vertex] = VertexStatus.Reliable;
             Probabilities[vertex] = 1;
             List<int> connected = new List<int>(BaseGraph.GetConnectedVertex(vertex));
-            List<int> toMerge = new List<int> { vertex };
+            List<int> toMerge = new List<int> {vertex};
             for (int i = 0; i < connected.Count; i++)
             {
-                if (Status[connected[i]] == VertexStatus.Important || Status[connected[i]] == VertexStatus.Reliable)
+                if (Probabilities[connected[i]].Equal(1))
                     toMerge.Add(connected[i]);
             }
             if (toMerge.Count > 1)
             {
-                if (MergeVertex(new List<List<int>> { toMerge }) == 1)
+                if (MergeVertex(new List<List<int>> {toMerge}) == 1)
                     return true;
             }
+            if (TryMerge() == 1)
+                return true;
             if (IsCalculated())
             {
                 Calculate();
@@ -155,18 +165,34 @@ namespace GraphSh
 
         public bool DeleteVertex(int vertex)
         {
-            Probability *= (1 - Probabilities[vertex]);
-            DeleteVertexes(new List<int> { vertex });
-            if (DeleteExtraComponents() == 1)
-                return true;
-            if (IsCalculated())
+            try
             {
-                Calculate();
-                return true;
+
+
+                Probability *= (1 - Probabilities[vertex]);
+                DeleteVertexes(new List<int> {vertex});
+                if (DeleteExtraComponents() == 1)
+                    return true;
+                if (IsCalculated())
+                {
+                    Calculate();
+                    return true;
+                }
+                if (DeleteHangedVertex() == 1)
+                    return true;
+                if (IsCalculated())
+                {
+                    Calculate();
+                    return true;
+                }
+
+                return TryMerge() == 1 ? true : false;
             }
-            if (DeleteHangedVertex() == 1)
-                return true;
-            return TryMerge() == 1 ? true : false;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         #endregion
@@ -230,7 +256,8 @@ namespace GraphSh
                         int connected = BaseGraph.GetConnectedVertex(hangedVertex[i])[0];
                         if (connected >= ImpCount)
                         {
-                            newImportant.Add(connected);
+                            if(!newImportant.Contains(connected))
+                                newImportant.Add(connected);
                             ToSummator(1 - Probabilities[connected], 0);
                             Probability *= Probabilities[connected];
                             Probabilities[connected] = 1;
@@ -368,18 +395,21 @@ namespace GraphSh
         public int TryMerge()
         {
             List<List<int>> toMerge = new List<List<int>>();
-            merged = new int[ImpCount];
-            for (int i = 0; i < ImpCount; i++)
+            merged = new int[Dimension];
+            for (int i = 0; i < Dimension; i++)
             {
-                merged[i] = -1;
+                if (Probabilities[i].Equal(1))
+                    merged[i] = -1;
+                else
+                    merged[i] = -2;
             }
             int chrom = 0;
-            for (int i = 0; i < ImpCount; i++)
+            for (int i = 0; i < Dimension; i++)
             {
                 if (merged[i] == -1)
                     chromatic(i, chrom++);
             }
-            for (int i = 0; i < ImpCount; i++)
+            for (int i = 0; i < Dimension; i++)
             {
                 if (merged.Count(number => number == i) > 1)
                 {
@@ -408,7 +438,7 @@ namespace GraphSh
             int[] component = BaseGraph.GetConnectedVertex(vertex);
             for (int i = 0; i < component.Length; i++)
             {
-                if (component[i] < ImpCount && merged[component[i]] == -1)
+                if (merged[component[i]] == -1)
                     chromatic(component[i], color);
             }
         }
@@ -416,7 +446,7 @@ namespace GraphSh
 
         public bool IsCalculated()
         {
-            if (Dimension < 2)
+            if (Dimension < 3)
                 return true;
             if (BaseGraph.Dimension == BaseGraph.GetNumberOfEdges() + 1)
                 return true;

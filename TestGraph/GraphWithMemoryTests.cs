@@ -49,7 +49,7 @@ namespace TestGraph
 
             gr.DeleteHangedVertex();
 
-            summator.Received().Add(Arg.Any<double>(), 0);
+            summator.Received().Add(Arg.Is<double>(x => x - 0.3 < 1e-16), 0);
             Assert.AreEqual(3, gr.ImpCount);
             Assert.True(isListofEdgeEqual(expectedList, gr.BaseGraph.GetEdges()));
         }
@@ -71,7 +71,8 @@ namespace TestGraph
 
             };
             var g = new MatrixGraph(10, edges);
-            var mg = new GraphWithMemory<MatrixGraph>(g, 3, new List<double> {1,1,1,1,1,1,0.5,0.5,0.5,0.5}, GetFakeSummator());
+            var summator = Substitute.For<ISummator>();
+            var mg = new GraphWithMemory<MatrixGraph>(g, 3, new List<double> {1,1,1,1,1,1,0.5,0.5,0.5,0.5}, summator);
             var expectedList = new List<Edge>
             {
                 new Edge(0, 1),
@@ -80,9 +81,10 @@ namespace TestGraph
                 new Edge(2 ,4),
                 new Edge(0, 3)
             };
-
+            
             var answer = mg.DeleteExtraComponents();
 
+            summator.DidNotReceive().Add(Arg.Any<double>(), Arg.Any<int>());
             Assert.IsTrue(isListofEdgeEqual(expectedList, mg.BaseGraph.GetEdges()));
             Assert.AreEqual(0, answer);
         }
@@ -101,7 +103,8 @@ namespace TestGraph
 
             };
             var g = new MatrixGraph(10, edges);
-            var mg = new GraphWithMemory<MatrixGraph>(g, 4, new List<double> {1,1,1,0,0,0,0,0,0,0}, GetFakeSummator());
+            var summator = Substitute.For<Summator>();
+            var mg = new GraphWithMemory<MatrixGraph>(g, 4, new List<double> {1,1,1,0,0,0,0,0,0,0}, summator);
             var expectedList = new List<Edge>
             {
                 new Edge(0, 1),
@@ -110,6 +113,8 @@ namespace TestGraph
             };
 
             var answer = mg.DeleteExtraComponents();
+
+            summator.Received().Add(1, 0);
             Assert.AreEqual(1, answer);
         }
 

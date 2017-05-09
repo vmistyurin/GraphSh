@@ -23,7 +23,11 @@ namespace GraphSh
 
         public void Add(double probability, int connected)
         {
-            Task.Factory.StartNew(() => toAdd.Enqueue(new Tuple<double, int>(probability, connected)));
+            Task.Factory.StartNew(() =>
+            {
+                lock(toAdd)
+                    toAdd.Enqueue(new Tuple<double, int>(probability, connected));
+            });
         }
 
         public void StartSummator()
@@ -40,11 +44,11 @@ namespace GraphSh
                             var pair = toAdd.Dequeue();
                             Answer += pair.Item1 * pair.Item2;
                             _probability += pair.Item1;
-                            Console.WriteLine($"обновлено! Пока {_probability} \t {Answer}");
+//                            Console.WriteLine($"обновлено! Пока {_probability} \t {Answer}");
                         }
                         if (Math.Abs(_probability - 1) < 0.00001)
                         {
-                            Console.WriteLine($"ответ {Answer}");
+                          //  Console.WriteLine($"ответ {Answer}");
                             IsReady = true;
                             return;
                         }

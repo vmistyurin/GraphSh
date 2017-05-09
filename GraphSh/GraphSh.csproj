@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Computation.cs" />
     <Compile Include="DataStructure\Edge.cs" />
+    <Compile Include="DoubleExt.cs" />
     <Compile Include="GraphRealization\GraphBase.cs" />
     <Compile Include="GraphWithMemory.cs" />
     <Compile Include="ISummator.cs" />
@@ -58,6 +59,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GraphRealization\SymmetricMatrixGraph.cs" />
+    <Compile Include="SimpleSummator.cs" />
+    <Compile Include="SmartSummator.cs" />
     <Compile Include="Summator.cs" />
     <Compile Include="Tester.cs" />
   </ItemGroup>
