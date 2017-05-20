@@ -11,14 +11,11 @@ namespace GraphSh
     {
         public static void Main(string[] args)
         {
-            using (StreamWriter writer = new StreamWriter(File.Open("results1.txt", FileMode.Create)))
-            {
-                Tester t = new Tester(writer, Console.Out, @"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSh\GraphSh\bin\Debug\results.txt");
-                t.LoadTestsFromDirectory(@"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSharp\GraphSharp\bin\Debug\Tests");
-            }
-            
-            //var m = Tester.LoadFromFile(new StreamReader(File.Open("1.txt", FileMode.Open)));            
-            //Console.WriteLine(m.RelIndex());
+
+                AnswerCreator t = new AnswerCreator(Console.Out);
+            t.LoadTestsFromDirectory($"{Directory.GetCurrentDirectory()}\\Tests");           
+           /* var m = Tester.LoadFromFile(new StreamReader(File.Open(@"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSh\GraphSh\bin\Debug\108.txt", FileMode.Open)));            
+            Console.WriteLine(m.RelIndex());*/
             //Console.WriteLine(GetGraph1().RelIndex());
             Console.ReadLine();
         }

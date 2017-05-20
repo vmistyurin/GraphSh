@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnswerCreator.cs" />
     <Compile Include="Computation.cs" />
     <Compile Include="DataStructure\Edge.cs" />
     <Compile Include="DoubleExt.cs" />

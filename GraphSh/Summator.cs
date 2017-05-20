@@ -44,9 +44,8 @@ namespace GraphSh
                             var pair = toAdd.Dequeue();
                             Answer += pair.Item1 * pair.Item2;
                             _probability += pair.Item1;
-//                            Console.WriteLine($"обновлено! Пока {_probability} \t {Answer}");
                         }
-                        if (Math.Abs(_probability - 1) < 0.00001)
+                        if (_probability.Equal(1))
                         {
                           //  Console.WriteLine($"ответ {Answer}");
                             IsReady = true;

@@ -122,9 +122,6 @@ namespace TestGraph
         public void DeleteVertexes()
         {
             var graph = GetGraph();
-            graph.Status[10] = VertexStatus.Reliable;
-            graph.Status[8] = VertexStatus.Reliable;
-            graph.Status[4] = VertexStatus.Reliable;
             graph.Probabilities[6] = 0.3;
             graph.Probabilities[9] = 0.8;
             graph.Probabilities[10] = 0.1;
@@ -145,8 +142,6 @@ namespace TestGraph
             graph.DeleteVertexes(new List<int> { 6, 4, 5 });
 
             Assert.IsTrue(isListofEdgeEqual(graph.BaseGraph.GetEdges(),expectedList));
-            Assert.AreEqual(VertexStatus.Reliable, graph.Status[7]);
-            Assert.AreEqual(VertexStatus.Reliable, graph.Status[5]);
             Assert.AreEqual(0.1, graph.Probabilities[7]);
         }
         public GraphWithMemory<MatrixGraph> GetGraph()
@@ -187,16 +182,11 @@ namespace TestGraph
                 new Edge(1, 7)
             };
             var g = new MatrixGraph(12, edges);
-            FakeSummator s = new FakeSummator();
+            var s = Substitute.For<ISummator>();
             var result = new GraphWithMemory<MatrixGraph>(g, 3, new List<double> { 1,1,1,0.5,0.5,1,0.5,0.5,0.1,0.5,0.5,0.5}, s);
-            result.Status[5] = VertexStatus.Reliable;
             return result;
         }
 
-        public ISummator GetFakeSummator()
-        {
-            return new FakeSummator();
-        }
         private static bool isListofEdgeEqual(List<Edge> l1, List<Edge> l2)
         {
             foreach (var edge in l1)

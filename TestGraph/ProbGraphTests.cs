@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using GraphSh;
 using NUnit.Framework;
 
@@ -47,5 +45,34 @@ namespace TestGraph
 
             Assert.AreEqual(0.824, index);
         }
-}
+
+        [Test]
+        public void GridTest1()
+        {
+            var graph = Tester.LoadFromFile(new StreamReader(File.Open(@"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSh\GridTests\101.txt", FileMode.Open)));
+
+            var index = graph.RelIndex();
+
+            Assert.True(index.Equal(0.264892578125));
+        }
+        [Test]
+        public void GridTest2()
+        {
+            var graph = Tester.LoadFromFile(new StreamReader(File.Open(@"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSh\GridTests\102.txt", FileMode.Open)));
+
+            var index = graph.RelIndex();
+
+            Assert.True(index.Equal(0.1863043308258));
+        }
+
+        [Test]
+        public void GridTest3()
+        {
+            var graph = Tester.LoadFromFile(new StreamReader(File.Open(@"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSh\GridTests\103.txt", FileMode.Open)));
+
+            var index = graph.RelIndex();
+
+            Assert.True(index.Equal(0.1866688728332519));
+        }
+    }
 }

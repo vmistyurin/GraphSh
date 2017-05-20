@@ -27,9 +27,11 @@ namespace GraphSh
             {
                 _probability += probability;
                 Answer += probability * answer;
+                //Console.WriteLine($"обновлено! Пока {this._probability} \t {Answer}");
+
                 if (_probability.Equal(1))
                 {
-                    IsReady = true;
+                    IsReady = true;                    
                 }
             }
         }

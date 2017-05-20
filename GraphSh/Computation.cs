@@ -1,8 +1,6 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -12,7 +10,7 @@ namespace GraphSh
     {
         private readonly GraphWithMemory<T> _graph;
         private readonly int _impVertexes;
-        private ISummator s;
+        private readonly ISummator s;
 
         public Computation(T graph, int important, List<double> probability)
         {
@@ -62,7 +60,7 @@ namespace GraphSh
                     return;
             }
             int nextVertex = RuleToChoose(graph);
-            GetIndexFromSubgraph(graph.GetGraph(), nextVertex, true);
+            Task.Factory.StartNew(() =>GetIndexFromSubgraph(graph.GetGraph(), nextVertex, true));
             GetIndexFromSubgraph(graph.GetGraph(), nextVertex, false);
         }
 
