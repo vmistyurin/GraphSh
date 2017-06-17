@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,12 +12,22 @@ namespace GraphSh
     {
         public static void Main(string[] args)
         {
+            AnswerCreator t = new AnswerCreator(Console.Out);
+            t.LoadTestsFromDirectory($"{Directory.GetCurrentDirectory()}\\Tests");
+            Console.WriteLine("ВСЕ");
+            /*var timer = new Stopwatch();
+            timer.Start();
+            var graph = Tester.LoadFromFile(new StreamReader(File.Open(@"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSh\GridTests\101.txt", FileMode.Open)));
 
-                AnswerCreator t = new AnswerCreator(Console.Out);
-            t.LoadTestsFromDirectory($"{Directory.GetCurrentDirectory()}\\Tests");           
-           /* var m = Tester.LoadFromFile(new StreamReader(File.Open(@"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSh\GraphSh\bin\Debug\108.txt", FileMode.Open)));            
-            Console.WriteLine(m.RelIndex());*/
-            //Console.WriteLine(GetGraph1().RelIndex());
+            var index = graph.RelIndex();
+            Console.WriteLine($"Висячих вершин - {GraphWithMemory<MatrixGraph>.HangedVertexes}");
+            Console.WriteLine($"Удалено  - {GraphWithMemory<MatrixGraph>.DisconnectedDeleted}");
+            Console.WriteLine($"Факторизаций - {GraphWithMemory<MatrixGraph>.Factorized}");
+            Console.WriteLine($"Расчитанных графов - {GraphWithMemory<MatrixGraph>.CalculatedGraphs}");
+            Console.WriteLine($"Деревьев - {GraphWithMemory<MatrixGraph>.Trees}");
+            Console.WriteLine($"Цепей - {GraphWithMemory<MatrixGraph>.Chains}");
+            Console.WriteLine($"Показатель надёжности - {index}");
+            Console.WriteLine($"Затраченное время - {timer.ElapsedMilliseconds/1000.0} секунд");*/
             Console.ReadLine();
         }
 

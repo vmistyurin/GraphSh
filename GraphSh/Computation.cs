@@ -21,6 +21,7 @@ namespace GraphSh
 
         public double Start()
         {
+            //GraphWithMemory<T>.ClearStats();
             //Task.Factory.StartNew(() => s.StartSummator());
             Task.Factory.StartNew(() => GetIndex());
             while (!s.IsReady)
@@ -37,6 +38,8 @@ namespace GraphSh
                return;
             if (_graph.DeleteHangedVertex() == 1)
                 return;
+            if(_graph.ChainReduction() == 1)
+                return;
             if (_graph.IsCalculated())
             {
                 _graph.Calculate();
@@ -44,7 +47,7 @@ namespace GraphSh
             }
             
             int nextVertex = RuleToChoose(_graph);
-            Task.Factory.StartNew(() => GetIndexFromSubgraph(_graph.GetGraph(), nextVertex, true));
+            GetIndexFromSubgraph(_graph.GetGraph(), nextVertex, true);
             GetIndexFromSubgraph(_graph.GetGraph(), nextVertex, false);
         }
         private void GetIndexFromSubgraph(GraphWithMemory<T> graph, int resolvingVertex, bool byReliable)
@@ -60,7 +63,7 @@ namespace GraphSh
                     return;
             }
             int nextVertex = RuleToChoose(graph);
-            Task.Factory.StartNew(() =>GetIndexFromSubgraph(graph.GetGraph(), nextVertex, true));
+            GetIndexFromSubgraph(graph.GetGraph(), nextVertex, true);
             GetIndexFromSubgraph(graph.GetGraph(), nextVertex, false);
         }
 

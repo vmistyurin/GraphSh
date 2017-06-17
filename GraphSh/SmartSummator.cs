@@ -8,31 +8,25 @@ namespace GraphSh
 {
     class SmartSummator:ISummator
     {
-        public bool IsReady { get; private set; }
+        public bool IsReady => _probability.Equal(1);
 
         public double Answer { get; private set; }
 
         private double _probability;
-        private readonly object locker = new object();
+        private readonly object _locker = new object();
 
         public SmartSummator()
         {
             _probability = 0;
-            IsReady = false;
             Answer = 0;
         }
         public void Add(double probability, int answer)
         {
-            lock (locker)
+            lock (_locker)
             {
                 _probability += probability;
                 Answer += probability * answer;
                 //Console.WriteLine($"обновлено! Пока {this._probability} \t {Answer}");
-
-                if (_probability.Equal(1))
-                {
-                    IsReady = true;                    
-                }
             }
         }
 

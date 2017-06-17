@@ -13,7 +13,7 @@ namespace GraphSh
         public abstract void ReNumerate(int[] newNumbers);
         public abstract int[] GetConnectedVertex(int vertex);
         public abstract int[] GetConnectedComponent(int vertex);
-        public abstract List<int> MergeVertexes(List<List<int>> mergedList, List<bool> isImportant);
+        public abstract List<int> MergeVertexes(List<List<int>> mergedList);
         public abstract int GetNumberOfEdges();
 
         public abstract object Clone();

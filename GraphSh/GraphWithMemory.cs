@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-//1 - расчиталось
-//0 - не расчиталось
+//1 - рассчиталось
+//0 - не рассчиталось
 
 
 namespace GraphSh
@@ -55,15 +56,13 @@ namespace GraphSh
                 ToSummator(1, 1);
                 return 1;
             }
-            foreach (var newPoint in mergedList)
-                isImportant.Add(newPoint.Any(number => number < ImpCount));
 
-            List<int> newNumbers = BaseGraph.MergeVertexes(mergedList, isImportant);
+            List<int> newNumbers = BaseGraph.MergeVertexes(mergedList);
 
             double[] newProb = new double[newNumbers.Max() + 1];
             for (int i = 0; i < newNumbers.Max() + 1; i++)
             {
-                newProb[i] = Probabilities[GetCount(newNumbers, i)];
+                newProb[i] = GetNewProbability(newNumbers, i);
             }
             Probabilities = newProb.ToList();
             if (IsCalculated())
@@ -72,6 +71,17 @@ namespace GraphSh
                 return 1;
             }
             return 0;
+        }
+
+        private double GetNewProbability(List<int> newNumbers, int v)
+        {
+            double result = 1;
+            for (int i = 0; i < newNumbers.Count; i++)
+            {
+                if (v == newNumbers[i])
+                    result *= Probabilities[i];
+            }
+            return result;
         }
         private int GetCount(List<int> newNumbers, int number)
         {
@@ -137,6 +147,8 @@ namespace GraphSh
                 return true;
             if (DeleteHangedVertex() == 1)
                 return true;
+            if (ChainReduction() == 1)
+                return true;
             return TryMerge() == 1 ? true : false;
         }
 
@@ -154,6 +166,11 @@ namespace GraphSh
                     return 1;
                 }
             }
+            /*if (IsCalculated())
+            {
+                Calculate();
+                return 1;
+            }*/
             List<int> toDelele = new List<int>();
             for (int i = ImpCount; i < BaseGraph.Dimension; i++)
             {
@@ -162,7 +179,7 @@ namespace GraphSh
             }
             if (toDelele.Count > 0)
             {
-                DisconnectedDeleted += toDelele.Count;
+                Interlocked.Add(ref DisconnectedDeleted, toDelele.Count);
                 DeleteVertexes(toDelele);
                 if (IsCalculated())
                 {
@@ -231,6 +248,10 @@ namespace GraphSh
             return 0;
         }
 
+        public int DeleteHangedVertex1()
+        {
+            return 0;
+        }
         private void SetImportant(List<int> vertexes)
         {
             List<int> newNumbers = new List<int>();
@@ -255,6 +276,59 @@ namespace GraphSh
             }
             return new List<int>(newList);
 
+        }
+
+        private List<int> _suspect;
+        private int[] _chains;
+        public int ChainReduction()
+        {
+            _suspect = new List<int>();
+            int[] degrees = BaseGraph.GetVertexesDegree();
+            for (int i = ImpCount; i < Dimension; i++)
+            {
+                if (degrees[i] == 2)
+                    _suspect.Add(i);
+            }
+            _chains = new int[Dimension];
+            for (int i = 0; i < _chains.Length; i++)
+            {
+                _chains[i] = -1;
+            }
+            int color = 1;
+            for (int i = 0; i < _suspect.Count; i++)
+            {
+                if(_suspect.Contains(i) && _chains[i] == -1)
+                    Chainer(i,color++);
+            }
+            List<List<int>> toMerge = new List<List<int>>();
+            for (int i = 0; i < _chains.Length; i++)
+            {
+                if (_chains.Count(number => number == i) > 1)
+                {
+                    List<int> tAdd = new List<int>();
+                    for (int j = 0; j < _chains.Length; j++)
+                    {
+                        if (_chains[j] == i)
+                            tAdd.Add(j);
+                    }
+                    toMerge.Add(tAdd.ToList());
+                }
+            }
+            if (toMerge.Count > 0)
+            {
+                Interlocked.Add(ref Chains, toMerge.Count);
+                return MergeVertex(toMerge);
+            }
+            return 0;
+        }
+        private void Chainer(int v, int color)
+        {
+            _chains[v] = color;
+            var connected = BaseGraph.GetConnectedVertex(v);
+            if (_suspect.Contains(connected[0]) && _chains[connected[0]] == -1)
+                Chainer(connected[0], color);
+            if (_suspect.Contains(connected[1]) && _chains[connected[1]] == -1)
+                Chainer(connected[1], color);
         }
         #endregion
 
@@ -293,7 +367,6 @@ namespace GraphSh
                 return MergeVertex(toMerge);
             return 0;
         }
-
         private void chromatic(int vertex, int color)
         {
             merged[vertex] = color;
@@ -305,10 +378,13 @@ namespace GraphSh
             }
         }
 
+        #region Calculate
+
+        
 
         public bool IsCalculated()
         {
-            if (Dimension < 3)
+            if (Dimension < 4)
                 return true;
             if (BaseGraph.Dimension == BaseGraph.GetNumberOfEdges() + 1)
                 return true;
@@ -317,15 +393,24 @@ namespace GraphSh
         public void Calculate()
         {
             Interlocked.Increment(ref CalculatedGraphs);
-            if (BaseGraph.Dimension < 2)
+            if (BaseGraph.Dimension < 4)
             {
                 switch (Dimension)
                 {
                     case 3:
                     {
-                        Console.WriteLine(ImpCount);
-                        ToSummator(Probabilities[2], 1);
-                        ToSummator(1 - Probabilities[2], 0);
+                        if (ImpCount == 1)
+                        {
+                            ToSummator(1, 1);
+                            break;
+                        }
+                        if (BaseGraph.GetMatrix()[0, 1] == 1)
+                            ToSummator(1, 1);
+                        else
+                        {
+                            ToSummator(Probabilities[2], 1);
+                            ToSummator(1 - Probabilities[2], 0);
+                        }
                         break;
                     }
                     case 4:
@@ -335,7 +420,7 @@ namespace GraphSh
                     }
                     case 2:
                     {
-                        Console.WriteLine(ImpCount);
+                        //Console.WriteLine(ImpCount);
                         ToSummator(1, 1);
                         break;
                     }
@@ -403,8 +488,9 @@ namespace GraphSh
         {
             sum.Add(Probability * probability, answer);
         }
+        #endregion
 
-#region statistics
+        #region statistics
 
         public static int HangedVertexes;
         public static int DisconnectedDeleted;
@@ -425,7 +511,7 @@ namespace GraphSh
         #endregion
 
 
-
+        #region Clone
         public GraphWithMemory(T graph, int impCount, List<double> probability, double prob, ISummator sumator)
         {
             BaseGraph = (T)graph.Clone();
@@ -450,5 +536,7 @@ namespace GraphSh
         {
             return (GraphWithMemory<T>)Clone();
         }
+        #endregion
+
     }
 }

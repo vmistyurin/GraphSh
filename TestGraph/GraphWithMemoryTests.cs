@@ -54,7 +54,6 @@ namespace TestGraph
             Assert.True(isListofEdgeEqual(expectedList, gr.BaseGraph.GetEdges()));
         }
 
-
         [Test]
         public void DeleteExtraComponents_OK()
         {
@@ -162,6 +161,43 @@ namespace TestGraph
             };
             var g = new MatrixGraph(11, edges);
             return new GraphWithMemory<MatrixGraph>(g,4,new List<double> {1,1,1,1,0.5,0.5,0.5,0.5,0.5,0.5,0.5}, null);
+        }
+
+
+        [Test]
+        public void ChainReduction()
+        {
+            List<Edge> edges = new List<Edge>
+            {
+                new Edge(0, 1),
+                new Edge(0, 4),
+                new Edge(1, 5),
+                new Edge(4, 5),
+                new Edge(2, 5),
+                new Edge(2, 3),
+                new Edge(3, 6),
+                new Edge(6, 7),
+                new Edge(4, 7),
+                new Edge(0, 5)
+            };
+            var g = new MatrixGraph(8, edges);
+            var summator = Substitute.For<Summator>();
+            var mg = new GraphWithMemory<MatrixGraph>(g, 2, new List<double> { 1, 1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5}, summator);
+
+            var expectedList = new List<Edge>
+            {
+                new Edge(0, 1),
+                new Edge(0, 3),
+                new Edge(1, 4),
+                new Edge(3, 4),
+                new Edge(2, 3),
+                new Edge(2, 4),
+                new Edge(0, 4)
+            };
+
+            mg.ChainReduction();
+
+            Assert.True(isListofEdgeEqual(expectedList, mg.BaseGraph.GetEdges()));
         }
 
         public GraphWithMemory<MatrixGraph> GetGraph1()

@@ -120,7 +120,7 @@ namespace GraphSh
             return vertexes.ToArray();
         }
 
-        public override List<int> MergeVertexes(List<List<int>> mergedList, List<bool> isImportant)
+        public override List<int> MergeVertexes(List<List<int>> mergedList)
         {
             List<int> newNumbers = new List<int>(Dimension);
             for (int i = 0; i < Dimension; i++)

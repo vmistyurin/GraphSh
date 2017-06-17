@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace GraphSh
 {
-    public interface ISummator1
-    {
-    }
-
-    public interface ISummator : ISummator1
+    public interface ISummator
     {
         void Add(double probability, int answer);
         void StartSummator();

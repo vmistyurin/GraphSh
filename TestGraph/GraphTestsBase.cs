@@ -109,7 +109,7 @@ namespace TestGraph
                 new List<int> {6,7}
             };
             List<bool> important = new List<bool> {true,false};
-            graph.MergeVertexes(mergedVertex,important);
+            graph.MergeVertexes(mergedVertex);
             var actualList = graph.GetEdges();
 
             Assert.IsTrue(isListofEdgeEqual(expectedList, actualList));

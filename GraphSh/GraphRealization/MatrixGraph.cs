@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GraphSh
@@ -71,6 +72,33 @@ namespace GraphSh
             return newNumbers.ToList();
         }
 
+        /*public void DeleteVertex(int v)
+        {
+            for (int i = v; i < Dimension - 1; i++)
+            {
+                Swap(i, i+1);
+            }
+            _matrix.
+        }
+
+        private void Swap(int v1, int v2)
+        {
+            for (int i = 0; i < Dimension; i++)
+            {
+                Swapp(ref _matrix[i, v1], ref _matrix[i, v2]);
+            }
+            for (int i = 0; i < Dimension; i++)
+            {
+                Swapp(ref _matrix[v1,i], ref _matrix[v2,i]);
+            }
+        }
+
+        private static void Swapp(ref int n, ref int m)
+        {
+            int tmp = n;
+            n = m;
+            m = tmp;
+        }*/
         public override List<Edge> GetEdges()
         {
             List<Edge> edges = new List<Edge>();
@@ -186,7 +214,7 @@ namespace GraphSh
             _matrix = newMatrix;
             return newNumbers;
         }*/
-        public override List<int> MergeVertexes(List<List<int>> mergedList, List<bool> isImportant)
+        public override List<int> MergeVertexes(List<List<int>> mergedList)
         {
             List<int> newNumbers = new List<int>(Dimension);
             for (int i = 0; i < Dimension; i++)
@@ -231,10 +259,7 @@ namespace GraphSh
             _matrix = newMatrix;
             return newNumbers;
         }
-        private static int GetFreeNumber(List<int> freeNumbers)
-        {
-            return 0;
-        }
+
         private static int GetNewNumber(List<List<int>> mergedList, int number)
         {
             for (int i = 0; i < mergedList.Count; i++)

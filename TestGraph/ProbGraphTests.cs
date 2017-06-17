@@ -43,10 +43,10 @@ namespace TestGraph
 
             double index = gr.RelIndex();
 
-            Assert.AreEqual(0.824, index);
+            Assert.True(0.824.Equal(index));
         }
 
-        [Test]
+       /* [Test]
         public void GridTest1()
         {
             var graph = Tester.LoadFromFile(new StreamReader(File.Open(@"C:\Users\beave\Documents\Visual Studio 2015\Projects\GraphSh\GridTests\101.txt", FileMode.Open)));
@@ -73,6 +73,6 @@ namespace TestGraph
             var index = graph.RelIndex();
 
             Assert.True(index.Equal(0.1866688728332519));
-        }
+        }*/
     }
 }

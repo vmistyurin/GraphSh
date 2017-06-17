@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 
 namespace GraphSh
 {
     public class AnswerCreator
     {
-        //private readonly TextWriter _outStream;
         private readonly TextWriter _logStream;
-       // private readonly String _PathToAnwers;
-        //private readonly Type _graphType;
         public AnswerCreator(TextWriter logStream)
         {
             _logStream = logStream;
@@ -18,6 +16,14 @@ namespace GraphSh
 
         public void LoadTestsFromDirectory(string path)
         {
+            using (
+                StreamWriter writer =
+                    new StreamWriter(
+                        File.Open($"{Directory.GetCurrentDirectory()}\\Tests\\answers.txt",
+                            FileMode.Create)))
+            {
+            }
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
             DirectoryInfo directory = new DirectoryInfo(path);
             foreach (var d in directory.GetDirectories())
             {
@@ -31,6 +37,7 @@ namespace GraphSh
             double averageTime = 0;
             int numberOfTests = currentDirectory.GetFiles().Length;
             _logStream.WriteLine($"Тесты для {dimension.Item1},{dimension.Item2} начались!");
+            GraphWithMemory<MatrixGraph>.ClearStats();
             foreach (var test in currentDirectory.GetFiles())
             {
                 _logStream.WriteLine($"{test.Name} начался!");
@@ -68,6 +75,12 @@ namespace GraphSh
                             FileMode.Append)))
             {
                 writer.WriteLine(toOut);
+                writer.WriteLine($"Висячих вершин - {GraphWithMemory<MatrixGraph>.HangedVertexes/numberOfTests}");
+                writer.WriteLine($"Удалено  - {GraphWithMemory<MatrixGraph>.DisconnectedDeleted / numberOfTests}");
+                writer.WriteLine($"Факторизаций - {GraphWithMemory<MatrixGraph>.Factorized / numberOfTests}");
+                writer.WriteLine($"Расчитанных графов - {GraphWithMemory<MatrixGraph>.CalculatedGraphs / numberOfTests}");
+                writer.WriteLine($"Деревьев - {GraphWithMemory<MatrixGraph>.Trees / numberOfTests}");
+                writer.WriteLine($"Цепей - {GraphWithMemory<MatrixGraph>.Chains / numberOfTests}");
             }
             _logStream.WriteLine(toOut);
         }
