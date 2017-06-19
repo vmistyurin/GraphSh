@@ -8,7 +8,7 @@ namespace GraphSh
 {
     class SmartSummator:ISummator
     {
-        public bool IsReady { get; private set; }
+        public bool IsReady => _probability.Equal(1);
 
         public double Answer { get; private set; }
 
@@ -18,7 +18,6 @@ namespace GraphSh
         public SmartSummator()
         {
             _probability = 0;
-            IsReady = false;
             Answer = 0;
         }
         public void Add(double probability, int answer)
@@ -27,10 +26,6 @@ namespace GraphSh
             {
                 _probability += probability;
                 Answer += probability * answer;
-                if (_probability.Equal(1))
-                {
-                    IsReady = true;
-                }
             }
         }
 
